@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "description": "A poller service based on ember-concurrency",
   "keywords": [
-    "ember-addon"
+    "ember-addon",
+    "polling"
   ],
   "repository": "",
   "license": "MIT",
