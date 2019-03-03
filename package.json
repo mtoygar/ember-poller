@@ -25,7 +25,8 @@
     "prettier": "prettier --write --single-quote --trailing-comma es5 --print-width 100 \"{app,config,tests}/**/*.js\""
   },
   "dependencies": {
-    "ember-cli-babel": "^6.6.0"
+    "ember-cli-babel": "^6.6.0",
+    "ember-concurrency": "^0.8.27"
   },
   "devDependencies": {
     "babel-eslint": "^8.0.0",
@@ -41,7 +42,6 @@
     "ember-cli-shims": "^1.2.0",
     "ember-cli-sri": "^2.1.0",
     "ember-cli-uglify": "^2.0.0",
-    "ember-concurrency": "^0.8.27",
     "ember-disable-prototype-extensions": "^1.1.2",
     "ember-export-application-global": "^2.0.0",
     "ember-load-initializers": "^1.1.0",
