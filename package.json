@@ -17,7 +17,8 @@
     "lint:js": "eslint .",
     "start": "ember serve",
     "test": "ember test",
-    "test:all": "ember try:each"
+    "test:all": "ember try:each",
+    "prettier": "prettier --write --single-quote --trailing-comma es5 --print-width 100 \"{app,config,tests}/**/*.js\""
   },
   "dependencies": {
     "ember-cli-babel": "^6.6.0"

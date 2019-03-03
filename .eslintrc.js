@@ -1,5 +1,6 @@
 module.exports = {
   root: true,
+  parser: 'babel-eslint',
   parserOptions: {
     ecmaVersion: 2017,
     sourceType: 'module'
@@ -15,6 +16,16 @@ module.exports = {
     browser: true
   },
   rules: {
+    'no-unused-vars': [
+      'error',
+      { args: 'all', argsIgnorePattern: '^_', varsIgnorePattern: '[iI]gnored' },
+    ],
+    'no-console': 0,
+    'require-yield': 0,
+    quotes: ['error', 'single', { avoidEscape: true }],
+    'comma-dangle': ['error', 'always-multiline'],
+    curly: ['error', 'all'],
+    'max-len': ['error', { code: 100, ignoreUrls: true }],
   },
   overrides: [
     // node files
@@ -26,12 +37,6 @@ module.exports = {
         'blueprints/*/index.js',
         'config/**/*.js',
         'tests/dummy/config/**/*.js'
-      ],
-      excludedFiles: [
-        'addon/**',
-        'addon-test-support/**',
-        'app/**',
-        'tests/dummy/app/**'
       ],
       parserOptions: {
         sourceType: 'script',
