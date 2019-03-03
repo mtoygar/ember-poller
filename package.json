@@ -6,7 +6,10 @@
     "ember-addon",
     "polling"
   ],
-  "repository": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mtoygar/ember-poller.git"
+  },
   "license": "MIT",
   "author": "",
   "directories": {
