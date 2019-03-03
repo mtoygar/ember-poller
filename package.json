@@ -4,7 +4,10 @@
   "description": "A poller service based on ember-concurrency",
   "keywords": [
     "ember-addon",
-    "polling"
+    "polling",
+    "poll",
+    "concurrency",
+    "task"
   ],
   "repository": {
     "type": "git",
