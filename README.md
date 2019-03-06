@@ -12,17 +12,18 @@ ember install ember-poller
 
 API
 ------------------------------------------------------------------------------
-`track(options)`
+* [track(options)](#track)
+* [abort()](#abort)
 
-#### track with pollTask
+##### `track`
+##### - track with pollTask
 
 An example usage of `track` method is as below.
-```
+```javascript
 import { reject } from 'rsvp';
 import { task } from 'ember-concurrency';
 
 poller: service(),
-...
 
 // Somewhere on the code call track method of the poller
 let pollerUnit = this.get('poller').track({
@@ -45,24 +46,24 @@ pollTask: task(function*() {
 ```
 
 Upon track call service returns a `pollerUnit`. It has the following properties;
-```
+```javascript
 {
   isSuccessful: // true if polling is ended with success.
   isError: // true if polling is ended with error.
   isRunning: // true if polling continues.
   isTimeout: // true if polling is ended with timeout.
+  isCanceled: // true if polling is canceled.
 }
 ```
 On your templates you can access the polling state using `pollerUnit.isSuccessful`or using `this.get('pollerUnit.isSuccessful')` on your components or controllers.
 
-#### track with standard js async function
+##### - track with async function
 If you do not use ember-concurrency on your project, you can provide an async function as an option. An example is provided below.
 
-```
+```javascript
 import { reject } from 'rsvp';
-...
+
 poller: service(),
-...
 
 // Somewhere on the code call track method of the poller
 let pollerUnit = this.get('poller').track({
@@ -84,20 +85,30 @@ async pollingFunction() {
 },
 ```
 Upon track call service returns a `pollerUnit`. It has the following properties;
-```
+```javascript
 {
   isSuccessful: // true if polling is ended with success.
   isError: // true if polling is ended with error.
   isRunning: // true if polling continues.
   isTimeout: // true if polling is ended with timeout.
+  isCanceled: // true if polling is canceled.
 }
 ```
 On your templates you can access the polling state using `pollerUnit.isSuccessful`or using `this.get('pollerUnit.isSuccessful')` on your components or controllers.
 
+##### `abort`
+
+  - For dealing with stopping the polling. It should be called on pollerUnit, not directly on poller service.
+
+```javascript
+let pollerUnit = this.get('poller').track({ pollTask: this.get('pollTask') });
+pollerUnit.abort(); // cancels the polling
+```
+
 Testing
 ------------------------------------------------------------------------------
 You can stub track method in your tests in your acceptance and integration tests.
-```
+```javascript
 let pollerService = this.owner.lookup('service:poller');
 this.stub(pollerService, 'track').returns({ isRunning: true }); // sinon implementation
 ```

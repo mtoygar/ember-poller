@@ -18,7 +18,7 @@ module('Unit | Mixin | poller', function() {
   // POLL TASK
 
   test('it stops polling on success', async function(assert) {
-    assert.expect(9);
+    assert.expect(10);
 
     let PollerObject = EmberObject.extend(PollerMixin);
 
@@ -40,13 +40,14 @@ module('Unit | Mixin | poller', function() {
     assert.notOk(subject.get('isRunning'));
     assert.notOk(subject.get('isError'));
     assert.notOk(subject.get('isTimeout'));
+    assert.notOk(subject.get('isCanceled'));
     assert.equal(subject.get('retryCount'), 1);
     assert.equal(subject.get('retryLimit'), 5);
     assert.equal(subject.get('pollingInterval'), 10);
   });
 
   test('it stops polling on error', async function(assert) {
-    assert.expect(9);
+    assert.expect(10);
 
     let PollerObject = EmberObject.extend(PollerMixin);
 
@@ -68,13 +69,14 @@ module('Unit | Mixin | poller', function() {
     assert.notOk(subject.get('isSuccessful'));
     assert.notOk(subject.get('isRunning'));
     assert.notOk(subject.get('isTimeout'));
+    assert.notOk(subject.get('isCanceled'));
     assert.equal(subject.get('retryCount'), 1);
     assert.equal(subject.get('retryLimit'), 5);
     assert.equal(subject.get('pollingInterval'), 10);
   });
 
   test('it tries polling until it succeeds', async function(assert) {
-    assert.expect(8);
+    assert.expect(9);
 
     let PollerObject = EmberObject.extend(PollerMixin);
 
@@ -98,13 +100,14 @@ module('Unit | Mixin | poller', function() {
     assert.notOk(subject.get('isRunning'));
     assert.notOk(subject.get('isError'));
     assert.notOk(subject.get('isTimeout'));
+    assert.notOk(subject.get('isCanceled'));
     assert.equal(subject.get('retryCount'), 3);
     assert.equal(subject.get('retryLimit'), 5);
     assert.equal(subject.get('pollingInterval'), 10);
   });
 
   test('it tries polling until retryLimit', async function(assert) {
-    assert.expect(8);
+    assert.expect(9);
 
     let PollerObject = EmberObject.extend(PollerMixin);
 
@@ -130,15 +133,44 @@ module('Unit | Mixin | poller', function() {
     assert.notOk(subject.get('isSuccessful'));
     assert.notOk(subject.get('isRunning'));
     assert.notOk(subject.get('isError'));
+    assert.notOk(subject.get('isCanceled'));
     assert.equal(subject.get('retryCount'), 5);
     assert.equal(subject.get('retryLimit'), 5);
     assert.equal(subject.get('pollingInterval'), 10);
   });
 
+  test('it cancels polling on demand', async function(assert) {
+    assert.expect(6);
+
+    let PollerObject = EmberObject.extend(PollerMixin);
+
+    const pollTask = { perform: () => {} };
+    const pollTaskStub = this.stub(pollTask, 'perform');
+
+    pollTaskStub.resolves(false);
+
+    let subject = PollerObject.create();
+
+    run(() => {
+      subject.startPolling(assign({}, TEST_POLLING_PROPERTIES, { pollTask }));
+      subject.abort();
+    });
+
+    await wait();
+
+    assert.ok(subject);
+    assert.ok(subject.get('isCanceled'));
+    assert.notOk(subject.get('isSuccessful'));
+    assert.notOk(subject.get('isRunning'));
+    assert.notOk(subject.get('isError'));
+    assert.notOk(subject.get('isTimeout'));
+  });
+
+
   // POLL FUNCTION
 
   test('it stops polling on success for poll function', async function(assert) {
-    assert.expect(9);
+    assert.expect(10);
 
     let PollerObject = EmberObject.extend(PollerMixin);
 
@@ -160,13 +192,14 @@ module('Unit | Mixin | poller', function() {
     assert.notOk(subject.get('isRunning'));
     assert.notOk(subject.get('isError'));
     assert.notOk(subject.get('isTimeout'));
+    assert.notOk(subject.get('isCanceled'));
     assert.equal(subject.get('retryCount'), 1);
     assert.equal(subject.get('retryLimit'), 5);
     assert.equal(subject.get('pollingInterval'), 10);
   });
 
   test('it stops polling on error for poll function', async function(assert) {
-    assert.expect(9);
+    assert.expect(10);
 
     let PollerObject = EmberObject.extend(PollerMixin);
 
@@ -188,13 +221,14 @@ module('Unit | Mixin | poller', function() {
     assert.notOk(subject.get('isSuccessful'));
     assert.notOk(subject.get('isRunning'));
     assert.notOk(subject.get('isTimeout'));
+    assert.notOk(subject.get('isCanceled'));
     assert.equal(subject.get('retryCount'), 1);
     assert.equal(subject.get('retryLimit'), 5);
     assert.equal(subject.get('pollingInterval'), 10);
   });
 
   test('it tries polling until it succeeds for poll function', async function(assert) {
-    assert.expect(8);
+    assert.expect(9);
 
     let PollerObject = EmberObject.extend(PollerMixin);
 
@@ -217,13 +251,14 @@ module('Unit | Mixin | poller', function() {
     assert.notOk(subject.get('isRunning'));
     assert.notOk(subject.get('isError'));
     assert.notOk(subject.get('isTimeout'));
+    assert.notOk(subject.get('isCanceled'));
     assert.equal(subject.get('retryCount'), 3);
     assert.equal(subject.get('retryLimit'), 5);
     assert.equal(subject.get('pollingInterval'), 10);
   });
 
   test('it tries polling until retryLimit for poll function', async function(assert) {
-    assert.expect(8);
+    assert.expect(9);
 
     let PollerObject = EmberObject.extend(PollerMixin);
 
@@ -248,8 +283,35 @@ module('Unit | Mixin | poller', function() {
     assert.notOk(subject.get('isSuccessful'));
     assert.notOk(subject.get('isRunning'));
     assert.notOk(subject.get('isError'));
+    assert.notOk(subject.get('isCanceled'));
     assert.equal(subject.get('retryCount'), 5);
     assert.equal(subject.get('retryLimit'), 5);
     assert.equal(subject.get('pollingInterval'), 10);
+  });
+
+  test('it cancels polling on demand for poll function', async function(assert) {
+    assert.expect(6);
+
+    let PollerObject = EmberObject.extend(PollerMixin);
+
+    const pollFunctionStub = this.stub();
+
+    pollFunctionStub.resolves(false);
+
+    let subject = PollerObject.create();
+
+    run(() => {
+      subject.startPolling(assign({}, TEST_POLLING_PROPERTIES, { pollFunction: pollFunctionStub }));
+      console.log(subject.abort());
+    });
+
+    await wait();
+
+    assert.ok(subject);
+    assert.ok(subject.get('isCanceled'));
+    assert.notOk(subject.get('isSuccessful'));
+    assert.notOk(subject.get('isRunning'));
+    assert.notOk(subject.get('isError'));
+    assert.notOk(subject.get('isTimeout'));
   });
 });
