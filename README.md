@@ -10,18 +10,12 @@ Installation
 ember install ember-poller
 ```
 
-
 API
 ------------------------------------------------------------------------------
-Poller service has a single method, namely `track`, which accepts a dictionary as below.
+`track(options)`
 
-```
-{
-  pollingInterval: 1000, // elapsed time in ms between the completion of the last request and the next one. (default is 1500 ms)
-  retryLimit: 30, // amount of retry atempt until timeout. (default is 40)
-  pollTask: pollTask, // the task that is to be performed on every polling attempt.
-}
-```
+#### track with pollTask
+
 An example usage of `track` method is as below.
 ```
 import { reject } from 'rsvp';
@@ -32,9 +26,9 @@ poller: service(),
 
 // Somewhere on the code call track method of the poller
 let pollerUnit = this.get('poller').track({
-  pollingInterval: 1000, // default is 1500 ms
-  retryLimit: 30, // default is 40
-  pollTask: this.get('pollTask'),
+  pollingInterval: 1000, // elapsed time in ms between the completion of the last request and the next one. (default is 1500 ms)
+  retryLimit: 30, // amount of retry atempt until timeout. (default is 40)
+  pollTask: this.get('pollTask'), // the task that is to be performed on every polling attempt.
 });
 this.set('pollerUnit', pollerUnit);
 
@@ -60,6 +54,53 @@ Upon track call service returns a `pollerUnit`. It has the following properties;
 }
 ```
 On your templates you can access the polling state using `pollerUnit.isSuccessful`or using `this.get('pollerUnit.isSuccessful')` on your components or controllers.
+
+#### track with standard js async function
+If you do not use ember-concurrency on your project, you can provide an async function as an option. An example is provided below.
+
+```
+import { reject } from 'rsvp';
+...
+poller: service(),
+...
+
+// Somewhere on the code call track method of the poller
+let pollerUnit = this.get('poller').track({
+  pollingInterval: 1000, // elapsed time in ms between the completion of the last request and the next one. (default is 1500 ms)
+  retryLimit: 30, // amount of retry atempt until timeout. (default is 40)
+  pollingFunction: () => this.pollingFunction(), // you need to pass pollingFunction as an arrow function. This ensures that `this` inside `pollingFunction` is the enclosing scope.
+});
+this.set('pollerUnit', pollerUnit);
+
+
+async pollingFunction() {
+  let response = await this.get('someModel').reload();
+  if (response.status == 'done') {
+    return true; // if your task succeeds return true, so that poller service understands the task is successfully completed
+  } else if (response == 'error') {
+    return reject(); // if you have an error case basicly reject the promise
+  }
+  // if polling needs to continue basicly do nothing.
+},
+```
+Upon track call service returns a `pollerUnit`. It has the following properties;
+```
+{
+  isSuccessful: // true if polling is ended with success.
+  isError: // true if polling is ended with error.
+  isRunning: // true if polling continues.
+  isTimeout: // true if polling is ended with timeout.
+}
+```
+On your templates you can access the polling state using `pollerUnit.isSuccessful`or using `this.get('pollerUnit.isSuccessful')` on your components or controllers.
+
+Testing
+------------------------------------------------------------------------------
+You can stub track method in your tests in your acceptance and integration tests.
+```
+let pollerService = this.owner.lookup('service:poller');
+this.stub(pollerService, 'track').returns({ isRunning: true }); // sinon implementation
+```
 
 
 Contributing

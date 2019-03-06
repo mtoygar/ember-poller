@@ -20,7 +20,7 @@ export default Mixin.create({
   }),
 
   startPolling(options) {
-    this.setProperties(assign(DEFAULT_POLLING_PROPERTIES, options));
+    this.setProperties(assign({}, DEFAULT_POLLING_PROPERTIES, options));
     var pollingTaskInstance = this.get('pollingTask').perform();
     this.set('pollingTaskInstance', pollingTaskInstance);
   },
@@ -28,11 +28,20 @@ export default Mixin.create({
   pollingTask: task(function*() {
     while (this.get('retryCount') < this.get('retryLimit')) {
       this.incrementProperty('retryCount');
-      if (yield this.get('pollTask').perform()) {
+      if (yield this.poll()) {
         return;
       }
       yield timeout(this.get('pollingInterval'));
     }
     this.set('isTimeout', true);
   }).drop(),
+
+  poll() {
+    if (this.get('pollTask')){
+      return this.get('pollTask').perform();
+    }
+    else if (this.get('pollFunction')){
+      return this.pollFunction();
+    }
+  },
 });
