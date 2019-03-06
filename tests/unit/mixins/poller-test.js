@@ -15,6 +15,8 @@ const TEST_POLLING_PROPERTIES = {
 };
 
 module('Unit | Mixin | poller', function() {
+  // POLL TASK
+
   test('it stops polling on success', async function(assert) {
     assert.expect(9);
 
@@ -28,7 +30,7 @@ module('Unit | Mixin | poller', function() {
     let subject = PollerObject.create();
 
     run(() => {
-      subject.startPolling(assign(TEST_POLLING_PROPERTIES, { pollTask }));
+      subject.startPolling(assign({}, TEST_POLLING_PROPERTIES, { pollTask }));
     });
 
     await wait();
@@ -56,7 +58,7 @@ module('Unit | Mixin | poller', function() {
     let subject = PollerObject.create();
 
     run(() => {
-      subject.startPolling(assign(TEST_POLLING_PROPERTIES, { pollTask }));
+      subject.startPolling(assign({}, TEST_POLLING_PROPERTIES, { pollTask }));
     });
 
     await wait();
@@ -86,7 +88,7 @@ module('Unit | Mixin | poller', function() {
     let subject = PollerObject.create();
 
     run(() => {
-      subject.startPolling(assign(TEST_POLLING_PROPERTIES, { pollTask }));
+      subject.startPolling(assign({}, TEST_POLLING_PROPERTIES, { pollTask }));
     });
 
     await wait();
@@ -118,7 +120,125 @@ module('Unit | Mixin | poller', function() {
     let subject = PollerObject.create();
 
     run(() => {
-      subject.startPolling(assign(TEST_POLLING_PROPERTIES, { pollTask }));
+      subject.startPolling(assign({}, TEST_POLLING_PROPERTIES, { pollTask }));
+    });
+
+    await wait();
+
+    assert.ok(subject);
+    assert.ok(subject.get('isTimeout'));
+    assert.notOk(subject.get('isSuccessful'));
+    assert.notOk(subject.get('isRunning'));
+    assert.notOk(subject.get('isError'));
+    assert.equal(subject.get('retryCount'), 5);
+    assert.equal(subject.get('retryLimit'), 5);
+    assert.equal(subject.get('pollingInterval'), 10);
+  });
+
+  // POLL FUNCTION
+
+  test('it stops polling on success for poll function', async function(assert) {
+    assert.expect(9);
+
+    let PollerObject = EmberObject.extend(PollerMixin);
+
+    const pollFunction = function() {
+      assert.ok(true, 'pollFunction is called');
+      return resolve(true);
+    };
+
+    let subject = PollerObject.create();
+
+    run(() => {
+      subject.startPolling(assign({}, TEST_POLLING_PROPERTIES, { pollFunction }));
+    });
+
+    await wait();
+
+    assert.ok(subject);
+    assert.ok(subject.get('isSuccessful'));
+    assert.notOk(subject.get('isRunning'));
+    assert.notOk(subject.get('isError'));
+    assert.notOk(subject.get('isTimeout'));
+    assert.equal(subject.get('retryCount'), 1);
+    assert.equal(subject.get('retryLimit'), 5);
+    assert.equal(subject.get('pollingInterval'), 10);
+  });
+
+  test('it stops polling on error for poll function', async function(assert) {
+    assert.expect(9);
+
+    let PollerObject = EmberObject.extend(PollerMixin);
+
+    const pollFunction = function() {
+      assert.ok(true, 'pollFunction is called');
+      return reject();
+    };
+
+    let subject = PollerObject.create();
+
+    run(() => {
+      subject.startPolling(assign({}, TEST_POLLING_PROPERTIES, { pollFunction }));
+    });
+
+    await wait();
+
+    assert.ok(subject);
+    assert.ok(subject.get('isError'));
+    assert.notOk(subject.get('isSuccessful'));
+    assert.notOk(subject.get('isRunning'));
+    assert.notOk(subject.get('isTimeout'));
+    assert.equal(subject.get('retryCount'), 1);
+    assert.equal(subject.get('retryLimit'), 5);
+    assert.equal(subject.get('pollingInterval'), 10);
+  });
+
+  test('it tries polling until it succeeds for poll function', async function(assert) {
+    assert.expect(8);
+
+    let PollerObject = EmberObject.extend(PollerMixin);
+
+    const pollFunctionStub = this.stub();
+
+    pollFunctionStub.onFirstCall().resolves(false);
+    pollFunctionStub.onSecondCall().resolves(false);
+    pollFunctionStub.onThirdCall().resolves(true);
+
+    let subject = PollerObject.create();
+
+    run(() => {
+      subject.startPolling(assign({}, TEST_POLLING_PROPERTIES, { pollFunction: pollFunctionStub }));
+    });
+
+    await wait();
+
+    assert.ok(subject);
+    assert.ok(subject.get('isSuccessful'));
+    assert.notOk(subject.get('isRunning'));
+    assert.notOk(subject.get('isError'));
+    assert.notOk(subject.get('isTimeout'));
+    assert.equal(subject.get('retryCount'), 3);
+    assert.equal(subject.get('retryLimit'), 5);
+    assert.equal(subject.get('pollingInterval'), 10);
+  });
+
+  test('it tries polling until retryLimit for poll function', async function(assert) {
+    assert.expect(8);
+
+    let PollerObject = EmberObject.extend(PollerMixin);
+
+    const pollFunctionStub = this.stub();
+
+    pollFunctionStub.onCall(0).resolves(false);
+    pollFunctionStub.onCall(1).resolves(false);
+    pollFunctionStub.onCall(2).resolves(false);
+    pollFunctionStub.onCall(3).resolves(false);
+    pollFunctionStub.onCall(4).resolves(false);
+
+    let subject = PollerObject.create();
+
+    run(() => {
+      subject.startPolling(assign({}, TEST_POLLING_PROPERTIES, { pollFunction: pollFunctionStub }));
     });
 
     await wait();
