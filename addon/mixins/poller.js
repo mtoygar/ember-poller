@@ -13,6 +13,7 @@ const DEFAULT_POLLING_PROPERTIES = {
 export default Mixin.create({
   isError: alias('pollingTaskInstance.isError'),
   isRunning: alias('pollingTaskInstance.isRunning'),
+  isCanceled: alias('pollingTaskInstance.isCanceled'),
   isTimeout: false,
 
   isSuccessful: computed('pollingTaskInstance.isSuccessful', 'isTimeout', function() {
@@ -23,6 +24,10 @@ export default Mixin.create({
     this.setProperties(assign({}, DEFAULT_POLLING_PROPERTIES, options));
     var pollingTaskInstance = this.get('pollingTask').perform();
     this.set('pollingTaskInstance', pollingTaskInstance);
+  },
+
+  abort() {
+    this.get('pollingTaskInstance').cancel();
   },
 
   pollingTask: task(function*() {
