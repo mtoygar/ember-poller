@@ -290,7 +290,7 @@ module('Unit | Mixin | poller', function() {
   });
 
   test('it cancels polling on demand for poll function', async function(assert) {
-    assert.expect(6);
+    assert.expect(7);
 
     let PollerObject = EmberObject.extend(PollerMixin);
 
@@ -309,6 +309,7 @@ module('Unit | Mixin | poller', function() {
 
     assert.ok(subject);
     assert.ok(subject.get('isCanceled'));
+    assert.ok(subject.get('isCancelled'));
     assert.notOk(subject.get('isSuccessful'));
     assert.notOk(subject.get('isRunning'));
     assert.notOk(subject.get('isError'));
