@@ -309,6 +309,7 @@ module('Unit | Mixin | poller', function() {
 
     assert.ok(subject);
     assert.ok(subject.get('isCanceled'));
+    assert.ok(subject.get('isCancelled'));
     assert.notOk(subject.get('isSuccessful'));
     assert.notOk(subject.get('isRunning'));
     assert.notOk(subject.get('isError'));

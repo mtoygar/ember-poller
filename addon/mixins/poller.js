@@ -14,6 +14,7 @@ export default Mixin.create({
   isError: alias('pollingTaskInstance.isError'),
   isRunning: alias('pollingTaskInstance.isRunning'),
   isCanceled: alias('pollingTaskInstance.isCanceled'),
+  isCancelled: alias('isCanceled'),
   isTimeout: false,
 
   isSuccessful: computed('pollingTaskInstance.isSuccessful', 'isTimeout', function() {
