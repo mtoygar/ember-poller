@@ -290,7 +290,7 @@ module('Unit | Mixin | poller', function() {
   });
 
   test('it cancels polling on demand for poll function', async function(assert) {
-    assert.expect(6);
+    assert.expect(7);
 
     let PollerObject = EmberObject.extend(PollerMixin);
 
