@@ -8,16 +8,19 @@ const DEFAULT_STUBBED_SERVICE_PROPERTIES = {
 };
 
 const PollUnit = EmberObject.extend(PollerMixin, {
-  startPolling: function(options, stubbedProps) {
-    this._super(assign({}, options, DEFAULT_STUBBED_SERVICE_PROPERTIES, stubbedProps));
+  startPolling: function(options, stubbedProps, ...pollingArgs) {
+    this._super(
+      assign({}, options, DEFAULT_STUBBED_SERVICE_PROPERTIES, stubbedProps),
+      ...pollingArgs
+    );
   },
 });
 
 export default function injectPoller(test, stubbedProps = {}) {
   let stubbedPoller = Service.extend({
-    track(options = {}) {
+    track(options = {}, ...pollingArgs) {
       let pollUnit = PollUnit.create();
-      pollUnit.startPolling(options, stubbedProps);
+      pollUnit.startPolling(options, stubbedProps, ...pollingArgs);
       return pollUnit;
     },
   });

@@ -12,23 +12,34 @@ module('Unit | Service | poller', function(hooks) {
 
     let service = this.owner.lookup('service:poller');
 
-    let pollUnitObject = EmberObject.create({
-      startPolling: function() {
-        assert.ok(true);
-        return true;
-      },
-    });
-
+    let pollUnitObject = EmberObject.create({ startPolling: () => {} });
     let pollingSpy = this.spy(pollUnitObject, 'startPolling');
 
-    // stub PollUnit class
     this.stub(PollUnit, 'create').callsFake(() => pollUnitObject);
 
     service.track('dummyArgs');
 
+    assert.ok(pollingSpy.withArgs('dummyArgs'), 'startPolling called with proper arguments');
+    assert.ok(pollingSpy.calledOnce, 'startPolling is called once');
+  });
+
+  test('it passes every arguments to poller mixin', async function(assert) {
+    assert.expect(2);
+
+    let service = this.owner.lookup('service:poller');
+
+    let pollUnitObject = EmberObject.create({ startPolling: () => {} });
+    let pollingSpy = this.spy(pollUnitObject, 'startPolling');
+
+    this.stub(PollUnit, 'create').callsFake(() => pollUnitObject);
+
+    const options = { dummyField: 'dummyField' };
+    service.track(options, 1, 2, 3, 4);
+
     assert.ok(
-      pollingSpy.withArgs('dummyArgs').calledOnce,
+      pollingSpy.withArgs(options, 1, 2, 3, 4),
       'startPolling should be called with proper arguments'
     );
+    assert.ok(pollingSpy.calledOnce, 'startPolling is called once');
   });
 });
