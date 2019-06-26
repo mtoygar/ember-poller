@@ -34,10 +34,10 @@ API
 Starts the polling and returns a [PollerUnit](#PollerUnit) instance. You can track the state of polling using `PollerUnit` object and cancel the polling if necessary.
 
 ###### `Parameters`
-| Name    | Type   | Description                        |
-| ------- | ------ | ---------------------------------- |
-| options | Object | setup poller's properties          |
-| arg*    | *      | args to pass to the polling method |
+| Name         | Type   | Description                        |
+| -------      | ------ | ---------------------------------- |
+| options      | Object | setup poller's properties          |
+| pollingArgs* | *      | args to pass to the polling method |
 
 Options parameter is used to configure polling. Allowed keys and default values are stated below. Note that either `pollTask` or `pollFunction` has to be present in the `options` object.
 
