@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.com/mtoygar/ember-poller.svg?branch=master)](https://travis-ci.com/mtoygar/ember-poller)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ember-poller
 ==============================================================================
 
@@ -168,8 +171,3 @@ test('it supports polling methods with arguments', async function(assert) {
   // Assert
 });
 ```
-
-License
-------------------------------------------------------------------------------
-
-This project is licensed under the [MIT License](LICENSE.md).
