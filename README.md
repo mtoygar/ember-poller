@@ -3,6 +3,14 @@ ember-poller
 
 A polling addon for ember based on [ember-concurrency](https://github.com/machty/ember-concurrency)
 
+What does it offer?
+------------------------------------------------------------------------------
+* Easy and handy polling state management
+* Multiple and isolated polling support
+* Automatic polling destruction upon the destruction of the object that pollings live on
+* Cancellable on demand
+* A test helper to increase testability
+
 Installation
 ------------------------------------------------------------------------------
 
@@ -10,15 +18,11 @@ Installation
 ember install ember-poller
 ```
 
-API
+Sample Usages
 ------------------------------------------------------------------------------
-* [track(options)](#track)
-* [abort()](#abort)
 
-##### `track`
-##### - track with pollTask
+You can initiate the poller using a ember-concurrency task.
 
-An example usage of `track` method is as below.
 ```javascript
 import { reject } from 'rsvp';
 import { task } from 'ember-concurrency';
@@ -27,9 +31,9 @@ poller: service(),
 
 // Somewhere on the code call track method of the poller
 let pollerUnit = this.get('poller').track({
-  pollingInterval: 1000, // elapsed time in ms between the completion of the last request and the next one. (default is 1500 ms)
-  retryLimit: 30, // amount of retry atempt until timeout. (default is 40)
-  pollTask: this.get('pollTask'), // the task that is to be performed on every polling attempt.
+  pollingInterval: 1000,
+  retryLimit: 30,
+  pollTask: this.get('pollTask'),
 });
 this.set('pollerUnit', pollerUnit);
 
@@ -39,26 +43,13 @@ pollTask: task(function*() {
   if (response.status == 'done') {
     return true; // if your task succeeds return true, so that poller service understands the task is successfully completed
   } else if (response == 'error') {
-    return reject(); // if you have an error case basicly reject the promise
+    return reject(); // if you have an error case basically reject the promise
   }
-  // if polling needs to continue basicly do nothing.
-}).restartable(),
+  // if polling needs to continue basically do nothing.
+})
 ```
 
-Upon track call service returns a `pollerUnit`. It has the following properties;
-```javascript
-{
-  isSuccessful: // true if polling is ended with success.
-  isError: // true if polling is ended with error.
-  isRunning: // true if polling continues.
-  isTimeout: // true if polling is ended with timeout.
-  isCanceled: // true if polling is canceled.
-}
-```
-On your templates you can access the polling state using `pollerUnit.isSuccessful`or using `this.get('pollerUnit.isSuccessful')` on your components or controllers.
-
-##### - track with async function
-If you do not use ember-concurrency on your project, you can provide an async function as an option. An example is provided below.
+If you don't use ember-concurrency on your project, you can also provide an async function as a polling method.
 
 ```javascript
 import { reject } from 'rsvp';
@@ -67,9 +58,9 @@ poller: service(),
 
 // Somewhere on the code call track method of the poller
 let pollerUnit = this.get('poller').track({
-  pollingInterval: 1000, // elapsed time in ms between the completion of the last request and the next one. (default is 1500 ms)
-  retryLimit: 30, // amount of retry atempt until timeout. (default is 40)
-  pollingFunction: () => this.pollingFunction(), // you need to pass pollingFunction as an arrow function. This ensures that `this` inside `pollingFunction` is the enclosing scope.
+  pollingInterval: 1000,
+  retryLimit: 30,
+  pollingFunction: () => this.pollingFunction(),
 });
 this.set('pollerUnit', pollerUnit);
 
@@ -79,31 +70,63 @@ async pollingFunction() {
   if (response.status == 'done') {
     return true; // if your task succeeds return true, so that poller service understands the task is successfully completed
   } else if (response == 'error') {
-    return reject(); // if you have an error case basicly reject the promise
+    return reject(); // if you have an error case basically reject the promise
   }
-  // if polling needs to continue basicly do nothing.
-},
-```
-Upon track call service returns a `pollerUnit`. It has the following properties;
-```javascript
-{
-  isSuccessful: // true if polling is ended with success.
-  isError: // true if polling is ended with error.
-  isRunning: // true if polling continues.
-  isTimeout: // true if polling is ended with timeout.
-  isCanceled: // true if polling is canceled.
+  // if polling needs to continue basically do nothing.
 }
 ```
-On your templates you can access the polling state using `pollerUnit.isSuccessful`or using `this.get('pollerUnit.isSuccessful')` on your components or controllers.
 
-##### `abort`
+Arguments other than option parameter will be passed directly to your pollingTask or pollingFunction.
 
-  - For dealing with stopping the polling. It should be called on pollerUnit, not directly on poller service.
+```javascript
+import { reject } from 'rsvp';
+import { task } from 'ember-concurrency';
+
+poller: service(),
+
+// Somewhere on the code call track method of the poller
+let pollerUnit = this.get('poller').track({
+  pollingInterval: 1000,
+  retryLimit: 30,
+  pollTask: this.get('pollTask'),
+}, 17, 89);
+this.set('pollerUnit', pollerUnit);
+
+
+pollTask: task(function*(min, max) {
+  let response = yield this.get('someModel').reload();
+  console.log(min); // 17
+  console.log(max); // 89
+  if (response == 'error') {
+    return reject(); // if you have an error case basically reject the promise
+  } else if (response.get('anAttribute') > min && response.get('anAttribute') < max) {
+    return true; // if your task succeeds return true, so that poller service understands the task is successfully completed
+  }
+  // if polling needs to continue basically do nothing.
+})
+```
+
+You can also cancel polling using the `abort` method.
 
 ```javascript
 let pollerUnit = this.get('poller').track({ pollTask: this.get('pollTask') });
 pollerUnit.abort(); // cancels the polling
+pollerUnit.isCancelled; // returns true.
 ```
+
+You can track the state of the polling with the attributes of PollerUnit.
+
+```javascript
+pollerUnit.get('isError'); // true if polling is failed(an exception throwed or promise rejected), false otherwise.
+pollerUnit.get('isSuccessful'); // true if polling is succeeded(a `truthy` value is returned), false otherwise.
+pollerUnit.get('isRunning'); // true if polling is running, meaning it is not failed, succeeded, canceled or timed out.
+pollerUnit.get('isCanceled'); // true if polling is canceled using [abort()](#abort) method.
+pollerUnit.get('isCancelled'); // alias for isCanceled
+pollerUnit.get('isTimeout'); // true if polling terminates without success, failure and cancellation.
+pollerUnit.get('retryCount'); // returns the number of pollings made since polling started.
+````
+
+For further reference, you may look [API](https://github.com/mtoygar/ember-poller/blob/master/README.md) docs.
 
 Testing
 ------------------------------------------------------------------------------
@@ -113,30 +136,38 @@ let pollerService = this.owner.lookup('service:poller');
 this.stub(pollerService, 'track').returns({ isRunning: true }); // sinon implementation
 ```
 
+#### Test Helper
+You can also inject a stubbed poller to your tests and set the pollingInterval to zero. To test your success, error, timeout case all you need is to arrange your data/mocks as intended. An example can be found below.
 
-Contributing
-------------------------------------------------------------------------------
+```javascript
+import injectPoller from 'ember-poller/test-helpers/poller-stub';
 
-### Installation
+test('it supports polling methods with arguments', async function(assert) {
+  assert.expect(5);
 
-* `git clone git@github.com:mtoygar/ember-poller.git`
-* `cd ember-poller`
-* `yarn install`
+  injectPoller(this);
+  // Arrange
+  // Act
+  // Assert
+});
+```
 
-### Linting
+Optionally, you can also pass `stubbedOptions` to `injectPoller`. This will override your parameters specified in your code.
+```javascript
+import injectPoller from 'ember-poller/test-helpers/poller-stub';
 
-* `npm run prettier`
+test('it supports polling methods with arguments', async function(assert) {
+  assert.expect(5);
 
-### Running tests
-
-* `ember test` – Runs the test suite on the current Ember version
-
-### Running the dummy application
-
-* `ember serve`
-* Visit the dummy application at [http://localhost:4200](http://localhost:4204).
-
-For more information on using ember-cli, visit [https://ember-cli.com/](https://ember-cli.com/).
+  injectPoller(this, {
+    pollingInterval: 10,
+    retryLimit: 5,
+  });
+  // Arrange
+  // Act
+  // Assert
+});
+```
 
 License
 ------------------------------------------------------------------------------

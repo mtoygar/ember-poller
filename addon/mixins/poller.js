@@ -21,9 +21,9 @@ export default Mixin.create({
     return this.get('pollingTaskInstance.isSuccessful') && !this.get('isTimeout');
   }),
 
-  startPolling(options) {
+  startPolling(options, ...pollingArgs) {
     this.setProperties(assign({}, DEFAULT_POLLING_PROPERTIES, options));
-    var pollingTaskInstance = this.get('pollingTask').perform();
+    let pollingTaskInstance = this.get('pollingTask').perform(...pollingArgs);
     this.set('pollingTaskInstance', pollingTaskInstance);
   },
 
@@ -31,10 +31,10 @@ export default Mixin.create({
     this.get('pollingTaskInstance').cancel();
   },
 
-  pollingTask: task(function*() {
+  pollingTask: task(function*(...pollingArgs) {
     while (this.get('retryCount') < this.get('retryLimit')) {
       this.incrementProperty('retryCount');
-      if (yield this.poll()) {
+      if (yield this.poll(...pollingArgs)) {
         return;
       }
       yield timeout(this.get('pollingInterval'));
@@ -42,12 +42,12 @@ export default Mixin.create({
     this.set('isTimeout', true);
   }).drop(),
 
-  poll() {
+  poll(...pollingArgs) {
     if (this.get('pollTask')){
-      return this.get('pollTask').perform();
+      return this.get('pollTask').perform(...pollingArgs);
     }
     else if (this.get('pollFunction')){
-      return this.pollFunction();
+      return this.pollFunction(...pollingArgs);
     }
   },
 });

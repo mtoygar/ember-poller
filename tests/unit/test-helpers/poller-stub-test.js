@@ -162,4 +162,28 @@ module('Unit | TestHelper | poller-stub', function(hooks) {
 
     assert.ok(pollerUnit.isCancelled);
   });
+
+  test('it supports polling methods with arguments', async function(assert) {
+    assert.expect(5);
+
+    const pollFunction = async (arg1, arg2, arg3, arg4) => {
+      assert.equal(arg1, 123);
+      assert.equal(arg2, '1234');
+      assert.deepEqual(arg3, {});
+      assert.deepEqual(arg4, { dummy: 'dummy' });
+      return true;
+    };
+
+    injectPoller(this);
+
+    let service = this.owner.lookup('service:poller');
+
+    let pollerUnit = service.track({
+      pollFunction,
+    }, 123, '1234', {}, { dummy: 'dummy' });
+
+    await wait();
+
+    assert.ok(pollerUnit.get('isSuccessful'));
+  });
 });

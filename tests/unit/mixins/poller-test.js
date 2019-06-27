@@ -166,6 +166,36 @@ module('Unit | Mixin | poller', function() {
     assert.notOk(subject.get('isTimeout'));
   });
 
+  test('it supports tasks with arguments', async function(assert) {
+    assert.expect(6);
+
+    let PollerObject = EmberObject.extend(PollerMixin);
+
+    const pollTask = task(function*(arg1, arg2, arg3, arg4) {
+      assert.equal(arg1, 123);
+      assert.equal(arg2, '1234');
+      assert.deepEqual(arg3, {});
+      assert.deepEqual(arg4, { dummy: 'dummy' });
+      return resolve(true);
+    });
+
+    let subject = PollerObject.create();
+
+    run(() => {
+      subject.startPolling(
+        assign({}, TEST_POLLING_PROPERTIES, { pollTask }),
+        123,
+        '1234',
+        {},
+        { dummy: 'dummy' }
+      );
+    });
+
+    await wait();
+
+    assert.ok(subject);
+    assert.ok(subject.get('isSuccessful'));
+  });
 
   // POLL FUNCTION
 
@@ -314,5 +344,36 @@ module('Unit | Mixin | poller', function() {
     assert.notOk(subject.get('isRunning'));
     assert.notOk(subject.get('isError'));
     assert.notOk(subject.get('isTimeout'));
+  });
+
+  test('it supports tasks with arguments', async function(assert) {
+    assert.expect(6);
+
+    let PollerObject = EmberObject.extend(PollerMixin);
+
+    const pollFunction = async (arg1, arg2, arg3, arg4) => {
+      assert.equal(arg1, 123);
+      assert.equal(arg2, '1234');
+      assert.deepEqual(arg3, {});
+      assert.deepEqual(arg4, { dummy: 'dummy' });
+      return resolve(true);
+    };
+
+    let subject = PollerObject.create();
+
+    run(() => {
+      subject.startPolling(
+        assign({}, TEST_POLLING_PROPERTIES, { pollFunction }),
+        123,
+        '1234',
+        {},
+        { dummy: 'dummy' }
+      );
+    });
+
+    await wait();
+
+    assert.ok(subject);
+    assert.ok(subject.get('isSuccessful'));
   });
 });
