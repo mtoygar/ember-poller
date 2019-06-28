@@ -1,0 +1,28 @@
+.body{
+	margin: 15px 10%;
+}
+
+.container {
+	font-family: 'Lora', serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.setup {
+	display: flex;
+	flex-direction: column;
+}
+
+.field {
+	display: inline-flex;
+	justify-content: space-between;
+}
+
+input.medium {
+	width: 6ch;
+}
+
+input.small {
+	width: 4ch;
+}
