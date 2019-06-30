@@ -1,0 +1,86 @@
+body{
+	margin: 15px 10%;
+}
+
+.container {
+	font-family: 'Lora', serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.setup {
+	display: flex;
+	flex-direction: column;
+}
+
+.field {
+	margin: 1px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+input.medium {
+	width: 6ch;
+}
+
+label {
+	width: 15ch;
+}
+
+input.small {
+	width: 3ch;
+	text-align: right;
+	border: 0;
+}
+
+input[type="range"] {
+	margin: 0 10px 0 0;
+}
+
+.input-with-percentage {
+	display: flex;
+	align-items: center;
+	border: 1px solid #c8c8c8;
+}
+
+h1 {
+	margin: 0 0 5px;
+}
+
+h2 {
+	margin: 0 0 3px;
+}
+
+table {
+  border: 2px solid #A40808;
+  background-color: #EEE7DB;
+  text-align: center;
+}
+table td, table th {
+  border: 1px 0 solid #AAAAAA;
+}
+table tr:nth-child(even) {
+  background: #F5C8BF;
+}
+td.true {
+  background: #3bc610;
+}
+button {
+	margin: 2px;
+}
+
+.icon {
+  display: inline-block;
+  width: 1em;
+  height: 24px;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+}
+
+svg.append {
+	padding: 0 0 0 1px;
+	background-color: #c1d3c9;
+}
