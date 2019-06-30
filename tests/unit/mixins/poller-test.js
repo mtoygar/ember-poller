@@ -343,6 +343,7 @@ module('Unit | Mixin | poller', function() {
     assert.notOk(subject.get('isSuccessful'));
     assert.notOk(subject.get('isRunning'));
     assert.notOk(subject.get('isError'));
+    assert.notOk(subject.get('isFailed'));
     assert.notOk(subject.get('isTimeout'));
   });
 

@@ -34,6 +34,8 @@ The `options` parameter is used to configure polling. Allowed keys and default v
 ##### `Attributes`
 * **isError** `:boolean` `readOnly`
   >true if polling is failed(an exception throwed or promise rejected), false otherwise.
+* **isFailed** `:boolean` `readOnly`
+  >alias of isError
 * **isSuccessful** `:boolean` `readOnly`
   >true if polling is succeeded(a `truthy` value is returned), false otherwise.
 * **isRunning** `:boolean` `readOnly`
@@ -41,7 +43,7 @@ The `options` parameter is used to configure polling. Allowed keys and default v
 * **isCanceled** `:boolean` `readOnly`
   >true if polling is canceled using [abort()](#abort) method.
 * **isCancelled** `:boolean` `readOnly`
-  >alias for isCanceled
+  >alias of isCanceled
 * **isTimeout** `:boolean` `readOnly`
   >true if polling terminates without success, failure and cancellation.
 * **retryCount** `:Number` `readOnly`

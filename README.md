@@ -121,10 +121,11 @@ You can track the state of the polling with the attributes of PollerUnit.
 
 ```javascript
 pollerUnit.get('isError'); // true if polling is failed(an exception throwed or promise rejected), false otherwise.
+pollerUnit.get('isFailed'); // alias of isError
 pollerUnit.get('isSuccessful'); // true if polling is succeeded(a `truthy` value is returned), false otherwise.
 pollerUnit.get('isRunning'); // true if polling is running, meaning it is not failed, succeeded, canceled or timed out.
 pollerUnit.get('isCanceled'); // true if polling is canceled using [abort()](#abort) method.
-pollerUnit.get('isCancelled'); // alias for isCanceled
+pollerUnit.get('isCancelled'); // alias of isCanceled
 pollerUnit.get('isTimeout'); // true if polling terminates without success, failure and cancellation.
 pollerUnit.get('retryCount'); // returns the number of pollings made since polling started.
 ````
