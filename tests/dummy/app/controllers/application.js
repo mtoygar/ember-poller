@@ -11,7 +11,7 @@ const DEFAULT_POLLING_PROPS = {
   successProbability: 5,
 };
 
-const SCALE = 100
+const SCALE = 100;
 
 export default Controller.extend({
   poller: service(),
@@ -44,6 +44,10 @@ export default Controller.extend({
 
     abortPoll: function(pollerUnit){
       pollerUnit.abort();
+    },
+
+    clearTable: function(){
+      this.get('pollerUnits').clear();
     },
 
     setSuccessProbability: function(value){

@@ -1,50 +1,60 @@
 <div class="container">
 
-  <h2 id="title">Easy Polling with Ember Poller</h2>
+  <h1 id="title">Easy Polling with Ember Poller</h1>
 
-  <fieldset>
-    <legend>Polling Attributes</legend>
-    <div class="setup">
-      <div class="field">Polling Interval {{input value=(mut pollingInterval) class="medium"}}</div>
-      <th></th>
-      <div class="field">Retry Limit {{input value=(mut retryLimit) class="medium"}}</div>
-      <th></th>
-      <div class="field">Success Probability <input type='range' value={{successProbability}} oninput={{action 'setSuccessProbability' value='target.value'}}>{{input disabled=true value=successProbability class="small"}}</div>
-      <th></th>
-      <div class="field">Error Probability <input type='range' value={{errorProbability}} oninput={{action 'setErrorProbability' value='target.value'}}>{{input disabled=true value=errorProbability class="small"}}</div>
+  <h2>Poller Configuration</h2>
+  <div class="setup">
+    <div class="field">Polling Interval {{input value=(mut pollingInterval) class="medium"}}</div>
+    <div class="field">Retry Limit {{input value=(mut retryLimit) class="medium"}}</div>
+    <div class="field">
+      <label>Success Probability</label>
+      <input type='range' value={{successProbability}} oninput={{action 'setSuccessProbability' value='target.value'}}>
+      <div class="input-with-percentage">
+        {{input disabled=true value=successProbability class="small"}}
+        <svg class="icon icon-percent append"><use xlink:href="#icon-percent"></use></svg>
+      </div>
     </div>
-  </fieldset>
+    <div class="field">
+      <label>Error Probability</label>
+      <input type='range' value={{errorProbability}} oninput={{action 'setErrorProbability' value='target.value'}}>
+      <div class="input-with-percentage">
+        {{input disabled=true value=errorProbability class="small"}}
+        <svg class="icon icon-percent append"><use xlink:href="#icon-percent"></use></svg>
+      </div>
+    </div>
+  </div>
 
   {{#if pollerUnits.length}}
     <button onclick={{action 'poll'}}>Create another task to poll</button>
+    <button onclick={{action 'clearTable'}}>Clear the polling table</button>
+
+    <table>
+      <tr>
+        <th>ID</th>
+        <th>isSuccessful</th>
+        <th>isError</th>
+        <th>isRunning</th>
+        <th>isCanceled</th>
+        <th>isTimeout</th>
+        <th>retryCount</th>
+      </tr>
+
+      {{#each pollerUnits as |pollerUnit index|}}
+        <tr>
+          <td>{{index}}</td>
+          <td class="{{pollerUnit.isSuccessful}}">{{pollerUnit.isSuccessful}}</td>
+          <td class="{{pollerUnit.isError}}">{{pollerUnit.isError}}</td>
+          <td class="{{pollerUnit.isRunning}}">{{pollerUnit.isRunning}}</td>
+          <td class="{{pollerUnit.isCanceled}}">{{pollerUnit.isCanceled}}</td>
+          <td class="{{pollerUnit.isTimeout}}">{{pollerUnit.isTimeout}}</td>
+          <td>{{pollerUnit.retryCount}}</td>
+          <td>
+            <button onclick={{action 'abortPoll' pollerUnit}}>Abort the polling</button>
+          </td>
+        </tr>
+      {{/each}}
+    </table>
   {{else}}
     <button onclick={{action 'poll'}}>Poll a task</button>
   {{/if}}
-
-  <table>
-    <tr>
-      <th>ID</th>
-      <th>isSuccessful</th>
-      <th>isError</th>
-      <th>isRunning</th>
-      <th>isCanceled</th>
-      <th>isTimeout</th>
-      <th>retryCount</th>
-    </tr>
-
-    {{#each pollerUnits as |pollerUnit index|}}
-      <tr>
-        <td>{{index}}</td>
-        <td>{{pollerUnit.isSuccessful}}</td>
-        <td>{{pollerUnit.isError}}</td>
-        <td>{{pollerUnit.isRunning}}</td>
-        <td>{{pollerUnit.isCanceled}}</td>
-        <td>{{pollerUnit.isTimeout}}</td>
-        <td>{{pollerUnit.retryCount}}</td>
-        <td>
-          <button onclick={{action 'abortPoll' pollerUnit}}>Abort the polling</button>
-        </td>
-      </tr>
-    {{/each}}
-  </table>
 </div>
