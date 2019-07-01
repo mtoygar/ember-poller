@@ -27,10 +27,10 @@ export default Controller.extend({
 
     if (random < errorProbability) {
       return reject();
-    } else if (random < successProbability) {
+    } else if (random > 100 - successProbability) {
       return true;
     }
-  }).restartable(),
+  }),
 
   actions: {
     poll: function(){
