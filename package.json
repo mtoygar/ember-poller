@@ -1,6 +1,6 @@
 {
   "name": "ember-poller",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A poller service based on ember-concurrency",
   "keywords": [
     "ember-addon",
