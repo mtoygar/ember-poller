@@ -16,3 +16,16 @@ jobs:
     - name: Test
       script:
         - yarn run test
+    - name: Build
+      script:
+        - yarn run build -- -prod
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN
+  keep_history: true
+  on:
+    branch: master
+  local-dir: dist
+  verbose: true
