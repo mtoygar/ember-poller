@@ -23,7 +23,7 @@ The `options` parameter is used to configure polling. Allowed keys and default v
 
 `pollingInterval`: elapsed time in ms between the completion of the last request and the next one. `default: 1500`
 
-`retryLimit`: amount of retry attempt until timeout. `default: 40`
+`retryLimit`: amount of retry attempt until timeout. If you specify retryLimit as Infinity or Number.POSITIVE_INFINITY, polling should last forever. `default: 40`
 
 `pollTask`: the task that is to be performed on every polling attempt.
 
