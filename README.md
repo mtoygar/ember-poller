@@ -130,7 +130,7 @@ pollerUnit.get('isTimeout'); // true if polling terminates without success, fail
 pollerUnit.get('retryCount'); // returns the number of pollings made since polling started.
 ````
 
-For further reference, you may look [API](https://github.com/mtoygar/ember-poller/blob/master/README.md) docs.
+For further reference, you may look [API](https://github.com/mtoygar/ember-poller/blob/master/API.md) docs.
 
 Testing
 ------------------------------------------------------------------------------
